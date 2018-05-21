@@ -23,19 +23,27 @@ module Marvel
     end
 
     def self.find(id)
-      request_params = construct_params
-      url = "#{API_URL}/#{id}?#{request_params}"
-      response = Faraday.get(url)
-      attributes = JSON.parse(response.body)['data']['results'].first
-      new(attributes)
+      begin
+        request_params = construct_params
+        url = "#{API_URL}/#{id}?#{request_params}"
+        response = Faraday.get(url)
+        attributes = JSON.parse(response.body)['data']['results'].first
+        new(attributes)
+      rescue
+        "Some error occured. Please try again"
+      end
     end
 
     def self.find_all(options = {})
-      optional_params = construct_optional_params(options)
-      request_params = construct_params
-      response = Faraday.get("#{API_URL}?#{request_params}#{optional_params}")
-      JSON.parse(response.body)['data']['results'].map do |datum|
-        new(datum)
+      begin
+        optional_params = construct_optional_params(options)
+        request_params = construct_params
+        response = Faraday.get("#{API_URL}?#{request_params}#{optional_params}")
+        JSON.parse(response.body)['data']['results'].map do |datum|
+          new(datum)
+        end
+      rescue
+        "Some error occured. Please try again"
       end
     end
 

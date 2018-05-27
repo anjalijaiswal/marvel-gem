@@ -8,6 +8,12 @@ RSpec.describe Marvel::Character do
     end
   end
 
+  it "returns error if id is negative" do
+    error = Marvel::Character.find(-1011334)
+    expect(error).to eq "Incorrect id format"
+    expect(Marvel::Character.find("dsla")).to eq "Incorrect id format"
+  end
+
   it "gives back array of multiple marvel character" do
     VCR.use_cassette('multiple_character_10', :record => :new_episodes) do
       characters = Marvel::Character.find_all

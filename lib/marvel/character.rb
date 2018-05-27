@@ -23,6 +23,7 @@ module Marvel
     end
 
     def self.find(id)
+      return "Incorrect id format" unless (id.is_a?Integer) && ((id.to_s =~ /^-/) != 0)
       begin
         request_params = construct_params
         url = "#{API_URL}/#{id}?#{request_params}"
@@ -35,6 +36,7 @@ module Marvel
     end
 
     def self.find_all(options = {})
+      return "Incorrect params format" unless params_valid?(options)
       begin
         optional_params = construct_optional_params(options)
         request_params = construct_params
@@ -58,6 +60,15 @@ module Marvel
       options.merge!(limit: 10, offset: 0) unless options.key?(:limit)
       options.map{|attribute, value| "&#{attribute}=#{value}"}.join
     end
-    private_class_method :construct_params, :construct_optional_params
+
+    def self.params_valid?(options)
+      options.each do |k,v|
+        if k == :limit || k == :offset
+          return false unless (v.is_a?Integer) && ((v.to_s =~ /^-/) != 0)
+        end
+      end
+    end
+
+    private_class_method :construct_params, :construct_optional_params, :params_valid?
   end
 end
